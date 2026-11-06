@@ -7,9 +7,12 @@ _No routes found._
 <!-- sdlc:auto:end endpoints -->
 
 <!-- sdlc:auto:start drift -->
-_Code matches the designed API._
+**Designed but missing:**
+
+- GET /
+- GET /assets/{file}
 <!-- sdlc:auto:end drift -->
 
 <!-- sdlc:auto:start source -->
-_Not generated yet._
+Generated from commit `0216ccb`
 <!-- sdlc:auto:end source -->

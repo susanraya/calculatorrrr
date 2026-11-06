@@ -2,6 +2,38 @@
 openapi: 3.1.0
 info:
   title: calculator
-  version: architecture-v0
+  version: architecture-v1
   description: Designed API from the approved architecture (not extracted from code).
-paths: {}
+paths:
+  /:
+    get:
+      summary: Serves the calculator single-page app shell (index.html).
+      description: Serves the calculator single-page app shell (index.html).
+      operationId: get
+      parameters: []
+      responses:
+        '200':
+          description: text/html SPA document
+  /assets/{file}:
+    get:
+      summary: Serves the SPA's static JS/CSS/asset bundles.
+      description: Serves the SPA's static JS/CSS/asset bundles.
+      operationId: get_assets_file
+      parameters:
+      - name: file
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: static file (JS/CSS/image)
+  /health:
+    get:
+      summary: Liveness check for the static server.
+      description: Liveness check for the static server.
+      operationId: get_health
+      parameters: []
+      responses:
+        '200':
+          description: '{ "status": "ok" }'

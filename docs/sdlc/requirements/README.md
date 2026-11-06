@@ -7,151 +7,203 @@
 
 ### REQ-SCOPE · approved · source: requirements:v1
 
-Requirements v1 defines a lightweight-delivery, single-page arithmetic calculator with no accounts, payments, or persistence.
+Delivery scope is 'lightweight', requirements version 1. Approved technology stack: FastAPI 0.115 (serves static files only), AWS (static hosting), PostgreSQL 16 (named as platform default, unused — no data persists), React 19 (all functionality, client-side).
 
-Delivery scope: lightweight. Requirements version: 1. In scope: digit entry (0-9) and decimal point, +, -, ×, ÷, equals, clear, click/touch and physical keyboard input, friendly division-by-zero and invalid-entry messages, decimal results with reasonable precision, standard single-page keypad, open access with no login, no payments, all calculation client-side with nothing stored. Out of scope: scientific functions (powers, roots, trig, logs), percentage, and memory functions (M+, M-, MR, MC).
+Product owner approved stack to design against exactly, no substitutions:
+- Backend: FastAPI 0.115 — serves the single-page app and its files only; no server-side arithmetic.
+- Cloud: AWS — standard deployment target, delivers a static page at any expected traffic level.
+- Database: PostgreSQL 16 — named as the platform's default for future stored features; holds no calculator data as built.
+- Frontend: React 19 — implements keypad, click/touch and keyboard input, the four operations, divide-by-zero handling, and decimal handling.
+Out of scope: scientific functions (powers, roots, trig, logs), percentage, and memory functions (M+, M-, MR, MC).
 
-**Related:** EPIC-001, EPIC-002, EPIC-003, EPIC-004, EPIC-005
+### EPIC-001 · approved · source: requirements:EPIC-001
 
-### REQ-TECH-STACK · approved · source: requirements:tech-stack
+Number Entry epic: lets any user enter operands using digit keys 0-9 and a decimal point on a single-page keypad, no login required.
 
-Product owner approved a fixed technology stack to design and build against exactly as specified.
+Assumption: input is via a standard calculator keypad on a single page with no login or account required. Covers US-001 (whole numbers) and US-002 (decimal numbers).
 
-Backend: FastAPI 0.115 -- serves the static single-page app only; no server-side arithmetic logic. Cloud: AWS -- standard deployment target, static page delivery. Database: PostgreSQL 16 -- named as platform default but holds no calculator data since nothing persists. Frontend: React 19 -- implements the keypad, click/touch and physical-keyboard input, the four operations, divide-by-zero messaging, and decimal handling. Team is instructed to design against exactly these choices, not substitute.
+**Related:** US-001, US-002
 
 ### US-001 · approved · source: requirements:US-001
 
-Critical story: users enter whole numbers using digit keys 0-9, which appear in sequence on the display.
+Critical story: users enter whole numbers using digit keys 0-9, which appear in sequence on the display, replacing the initial leading zero on first digit press.
 
-Acceptance criteria: AC-001 - pressing 4 then 2 on an empty display shows "42". AC-002 - with display showing "0", pressing 7 replaces the leading zero so the display shows "7".
+AC-001: Pressing digits 4, 2 in sequence on an empty display shows "42".
+AC-002: With display showing "0", pressing 7 replaces the leading zero so display shows "7".
 
-**Related:** EPIC-001, AC-001, AC-002
+**Related:** EPIC-001
 
 ### US-002 · approved · source: requirements:US-002
 
-High-priority story: users can enter a decimal point to type non-integer numbers such as 3.5.
+High-priority story: users can enter a decimal point to type non-integer numbers like 3.5; a second decimal point is ignored; starting with a decimal point shows "0.".
 
-Acceptance criteria: AC-003 - display "3", then decimal point then 5 shows "3.5". AC-004 - a second decimal point in the same number is ignored; number stays validly formatted. AC-005 - pressing decimal point first on empty/"0" display shows "0." so entry stays valid.
+AC-003: Display "3", pressing decimal point then 5 shows "3.5".
+AC-004: If current number already has a decimal point, pressing it again adds no second decimal point; number stays validly formatted.
+AC-005: If display is empty or "0" and decimal point is pressed first, display shows "0." so entry stays valid.
 
-**Related:** EPIC-001, AC-003, AC-004, AC-005
+**Related:** EPIC-001
+
+### EPIC-002 · approved · source: requirements:EPIC-002
+
+Arithmetic Operations and Results epic: performs addition, subtraction, multiplication and division, computes result on equals, with reasonable decimal precision, all client-side.
+
+Covers US-003 (four basic operations), US-004 (equals computes result), US-005 (decimal precision). All calculation happens in the browser.
+
+**Related:** US-003, US-004, US-005
 
 ### US-003 · approved · source: requirements:US-003
 
-Critical story: the calculator performs the four basic arithmetic operations -- add, subtract, multiply, divide.
+Critical story: calculator performs the four basic arithmetic operations — addition, subtraction, multiplication, division.
 
-Acceptance criteria: AC-006 - 8 + 5 = "13". AC-007 - 9 - 4 = "5". AC-008 - 6 × 7 = "42". AC-009 - 20 ÷ 4 = "5".
+AC-006: 8 + 5 = then display shows "13".
+AC-007: 9 - 4 = then display shows "5".
+AC-008: 6 × 7 = then display shows "42".
+AC-009: 20 ÷ 4 = then display shows "5".
 
-**Related:** EPIC-002, AC-006, AC-007, AC-008, AC-009
+**Related:** EPIC-002
 
 ### US-004 · approved · source: requirements:US-004
 
-Critical story: pressing equals computes and displays the result of the entered operation.
+Critical story: pressing equals computes the result of the entered operation; pressing a digit after a result starts a new entry instead of appending.
 
-Acceptance criteria: AC-010 - entering 10 + 5 then equals shows result "15". AC-011 - after a result is shown, pressing a digit key starts a new number entry instead of appending to the previous result.
+AC-010: Entering 10 + 5 then equals shows computed result "15".
+AC-011: After a result is shown from equals, pressing a digit key begins a new number entry instead of appending to the previous result.
 
-**Related:** EPIC-002, AC-010, AC-011
+**Related:** EPIC-002
 
 ### US-005 · approved · source: requirements:US-005
 
-High-priority story: decimal results are shown with reasonable precision rather than raw floating-point artefacts.
+High-priority story: decimal results are shown with reasonable precision, avoiding floating-point artefacts and fitting the display.
 
-Acceptance criteria: AC-012 - 0.1 + 0.2 displays as "0.3", not a long floating-point artefact. AC-013 - a long/repeating decimal such as 10 ÷ 3 is rounded to a reasonable number of decimal places and fits within the display.
+AC-012: 0.1 + 0.2 = shows "0.3", not a long floating-point artefact.
+AC-013: A division producing a repeating or very long decimal (e.g. 10 ÷ 3) is rounded to a reasonable number of decimal places and fits within the display.
 
-**Related:** EPIC-002, NFR-003, AC-012, AC-013
+**Related:** EPIC-002, NFR-003
+
+### EPIC-003 · approved · source: requirements:EPIC-003
+
+Clearing and Error Handling epic: a clear key resets the calculation; division by zero and invalid entries are handled with a friendly message rather than a crash.
+
+Assumption: a single clear action resets the current calculation. Covers US-006 (clear), US-007 (divide-by-zero message), US-008 (invalid entry message).
+
+**Related:** US-006, US-007, US-008
 
 ### US-006 · approved · source: requirements:US-006
 
-High-priority story: a clear key resets the calculator to start a new calculation.
+High-priority story: pressing clear resets the calculator to a fresh state, discarding any pending operation or error.
 
-Acceptance criteria: AC-014 - pressing clear while a number/operation is shown resets display to "0" and discards any pending operation. AC-015 - pressing clear while an error message is shown dismisses the error and returns to the initial ready state.
+AC-014: With a number or in-progress operation shown, pressing clear resets display to "0" and discards any pending operation.
+AC-015: With an error message displayed, pressing clear dismisses it and returns the calculator to its initial ready state.
 
-**Related:** EPIC-003, AC-014, AC-015
+**Related:** EPIC-003
 
 ### US-007 · approved · source: requirements:US-007
 
-High-priority story: dividing by zero shows a friendly message instead of crashing the app.
+High-priority story: dividing by zero shows a friendly, human-readable message instead of crashing; clear dismisses it.
 
-Acceptance criteria: AC-016 - entering a number, ÷, 0, then equals shows a friendly human-readable error message; app does not crash or freeze. AC-017 - pressing clear while the division-by-zero message is shown clears it and allows a new calculation.
+AC-016: Entering a number, ÷, 0, then equals shows a friendly error message; the application does not crash or freeze.
+AC-017: With a division-by-zero error displayed, pressing clear clears the message and allows a new calculation to begin.
 
-**Related:** EPIC-003, NFR-002, AC-016, AC-017
+**Related:** EPIC-003, NFR-002
 
 ### US-008 · approved · source: requirements:US-008
 
-Medium-priority story: invalid or incomplete entries (e.g. "5 +" or two operators in a row) are handled gracefully rather than crashing.
+Medium-priority story: invalid or incomplete entries (e.g. "5 +" with no second operand, or two operators in a row) are handled gracefully without crashing.
 
-Acceptance criteria: AC-018 - pressing equals on an incomplete operation such as "5 +" either waits for more input or shows a friendly message, without crashing. AC-019 - entering two operators in a row is handled gracefully (e.g. replacing the pending operator) without error or crash.
+AC-018: Pressing equals on an incomplete operation such as "5 +" causes the calculator to either wait for more input or show a friendly message, without crashing.
+AC-019: Entering a malformed sequence such as two operators in a row is handled gracefully on the second operator press (e.g. by replacing the pending operator), without error or crash.
 
-**Related:** EPIC-003, NFR-002, AC-018, AC-019
+**Related:** EPIC-003, NFR-002
+
+### EPIC-004 · approved · source: requirements:EPIC-004
+
+Input Methods and Interface epic: a standard calculator keypad on a single page, operable by click/touch and physical keyboard.
+
+Assumption: conventional calculator layout with digits 0-9, decimal point, four operators, equals and clear. Covers US-009 (click/touch) and US-010 (physical keyboard).
+
+**Related:** US-009, US-010
 
 ### US-009 · approved · source: requirements:US-009
 
-Critical story: every keypad button is operable by mouse click or touchscreen tap with visible press feedback.
+Critical story: all keypad buttons are operable by mouse click or touchscreen tap, with visible press feedback, usable on a single page without login.
 
-Acceptance criteria: AC-020 - clicking/tapping digit, operator, equals or clear buttons performs the action exactly as if typed, with visible feedback that the button was pressed. AC-021 - on a touchscreen, all keys (0-9, decimal, +, -, ×, ÷, =, clear) are visible and usable on a single page with no login required.
+AC-020: Clicking or tapping on-screen digit, operator, equals or clear buttons performs the action exactly as if typed, with visible feedback that it was pressed.
+AC-021: On a touchscreen device, all keys (0-9, decimal, +, -, ×, ÷, =, clear) are visible and usable on a single page without needing to log in.
 
-**Related:** EPIC-004, NFR-004, NFR-005, AC-020, AC-021
+**Related:** EPIC-004, NFR-004, NFR-005
 
 ### US-010 · approved · source: requirements:US-010
 
-High-priority story: the calculator is fully operable via physical keyboard.
+High-priority story: the calculator can be operated entirely by physical keyboard — digits, decimal, operators, Enter/= to compute, Escape/Delete to clear.
 
-Acceptance criteria: AC-022 - with the page focused, number keys, decimal key, +, -, *, / enter the corresponding digits, decimal point and operations. AC-023 - Enter or = computes the result; Escape or Delete clears the calculator.
+AC-022: With the page focused, pressing number keys, the decimal key, +, -, * and / enters the corresponding digits, decimal point and operations.
+AC-023: With the page focused, pressing Enter or = computes the result; pressing Escape or Delete clears the calculator.
 
-**Related:** EPIC-004, NFR-005, AC-022, AC-023
+**Related:** EPIC-004, NFR-005
+
+### EPIC-005 · approved · source: requirements:EPIC-005
+
+Open Access and Client-Side Operation epic: free, single-page app open to the public, no login, no payments, no server-side storage; scientific/percentage/memory functions out of scope.
+
+Covers US-011 (instant open access) and US-012 (client-side calculation, nothing persisted).
+
+**Related:** US-011, US-012
 
 ### US-011 · approved · source: requirements:US-011
 
-High-priority story: the calculator is immediately usable by the public with no login, account, or payment.
+High-priority story: the calculator is usable immediately on page load, with no login, sign-up, payment, or personal-detail requirement.
 
-Acceptance criteria: AC-024 - on first page load, the calculator is fully usable with no login, sign-up, or account prompt. AC-025 - during use, the user is never asked to pay, register, or provide personal details; the product is free with no billing.
+AC-024: On first page load, the calculator is fully usable with no login, sign-up, or account prompt.
+AC-025: Performing any operation never prompts for payment, registration, or personal details — the product is free with no billing.
 
-**Related:** EPIC-005, NFR-001, AC-024, AC-025
+**Related:** EPIC-005, NFR-001
 
 ### US-012 · approved · source: requirements:US-012
 
-Medium-priority story: all calculation happens client-side in the browser with nothing persisted between sessions.
+Medium-priority story: all calculation happens client-side in the browser; nothing is stored or sent to a server, and nothing persists across sessions.
 
-Acceptance criteria: AC-026 - closing/reopening or refreshing the page retains no history, previous results, or account data; the calculator starts fresh. AC-027 - computation is carried out in the browser with no data persisted to a server or database.
+AC-026: Closing/reopening or refreshing the page retains no history, previous results, or account data — the calculator starts fresh.
+AC-027: Computation is carried out in the browser with no data persisted to a server or database.
 
-**Related:** EPIC-005, NFR-001, AC-026, AC-027
+**Related:** EPIC-005, NFR-001
 
 ### NFR-001 · approved · source: requirements:NFR-001
 
-Privacy NFR: all arithmetic stays in the visitor's browser; nothing is stored, sent to a server, or persisted between sessions, and no registration/personal details/payment are ever requested.
+Privacy: all arithmetic stays in the visitor's browser; nothing is stored or sent to a server, nothing persists between sessions, and no registration, personal details, or payment is ever requested.
 
-Applies to US-011 and US-012. Quality attribute category: privacy.
+Applies to US-011 and US-012. Quality requirement, not implemented as its own story.
 
 **Related:** US-011, US-012
 
 ### NFR-002 · approved · source: requirements:NFR-002
 
-Availability NFR: the calculator must never crash on bad input -- division by zero or incomplete/malformed entries are handled gracefully with a friendly message or by waiting for more input.
+Availability: the calculator never crashes or freezes on bad input — division by zero and incomplete/malformed entries are handled with a friendly message or by waiting for more input.
 
-Applies to US-007 and US-008. Quality attribute category: availability.
+Applies to US-007 and US-008. Quality requirement, not implemented as its own story.
 
 **Related:** US-007, US-008
 
 ### NFR-003 · approved · source: requirements:NFR-003
 
-Usability NFR: decimal results are shown with reasonable precision and rounded to fit the display, avoiding floating-point artefacts.
+Usability: decimal results are shown with reasonable precision, rounded to fit the display (e.g. 0.1 + 0.2 reads as "0.3").
 
-Applies to US-005. Quality attribute category: usability.
+Applies to US-005. Quality requirement, not implemented as its own story.
 
 **Related:** US-005
 
 ### NFR-004 · approved · source: requirements:NFR-004
 
-Usability NFR: on-screen keys must give visible feedback when pressed and perform exactly as if typed.
+Usability: on-screen keys give visible feedback when clicked/tapped and perform their action exactly as if typed.
 
-Applies to US-009. Quality attribute category: usability.
+Applies to US-009. Quality requirement, not implemented as its own story.
 
 **Related:** US-009
 
 ### NFR-005 · approved · source: requirements:NFR-005
 
-Compatibility NFR: every key must be usable by mouse click, touchscreen tap, and physical keyboard across desktop and touchscreen devices.
+Compatibility: every key is usable on a single page via mouse click, touchscreen tap, and physical keyboard, across desktop and touchscreen devices, without login.
 
-Applies to US-009 and US-010. Quality attribute category: compatibility.
+Applies to US-009 and US-010. Quality requirement, not implemented as its own story.
 
 **Related:** US-009, US-010
 <!-- sdlc:auto:end narrative -->
