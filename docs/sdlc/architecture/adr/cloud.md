@@ -1,7 +1,7 @@
 <!-- sdlc:auto:start adr -->
 # ADR-0004: Use AWS for Cloud
 
-Status: Proposed  
+Status: Accepted  
 Date: 2026-11-06
 
 ## Context and Problem Statement
